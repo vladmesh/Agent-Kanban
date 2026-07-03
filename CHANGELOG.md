@@ -6,7 +6,15 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-_Nothing yet._
+### Added
+- **Atomic task claim** — `POST /api/tasks/:id/claim` claims a task with a
+  conditional `UPDATE ... WHERE assignee_id IS NULL` (Postgres row-locking
+  serializes the race), not a blind `PATCH`. Two agents claiming the same
+  task concurrently now get exactly one `200` and one `409` — previously
+  both could get `200`, with the second silently overwriting the first's
+  assignee (lost update). `kanban claim` now uses the new endpoint and
+  reports a clear message on `409`. `MemoryStore` gained the equivalent
+  `assignee_id != null` guard for parity.
 
 ## [1.3.1] — 2026-06-26
 
