@@ -1,0 +1,27 @@
+# Workspace manifest for the task pipeline (control-panel/pipeline/provision.py).
+# Fork-local file, not for upstream PRs.
+
+[workspace]
+project = "agent-kanban"
+base_branch = "main"
+
+[secrets]
+copy = []
+
+[github]
+token = "dev-shared"
+
+[skills]
+install = []
+
+[setup]
+commands = [
+  "npm ci",
+  "cd server && npm ci",
+]
+
+[smoke]
+# Full test suites need a running stack (docker compose); keep bring-up light and
+# syntax-check the backend instead. Workers run the real suites themselves.
+command = "node --check server/src/index.js && node --check server/src/store.js"
+timeout_seconds = 60
