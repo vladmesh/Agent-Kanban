@@ -6,7 +6,15 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-_Nothing yet._
+### Fixed
+- **E2E standalone stack skipped migrations** — `tests/docker-compose.e2e-standalone.yml` mounted
+  `db/schema.sql` straight into Postgres's `docker-entrypoint-initdb.d` and ran the API/seed
+  containers with no migrate step, so a fresh standalone stack never applied `db/migrations/*`
+  (e.g. 0003's `blocked_reason` column) and half of `npm run test:api` 500'd. `api` and `seed` now
+  run `scripts/migrate.js` before starting, same as `docker-compose.yml`, and the schema.sql mount
+  is gone — migrate owns building the schema on both stacks. (`tests/docker-compose.e2e.yml`, the
+  overlay used with the main compose file, was already fine — it inherits `db`/`api` from
+  `docker-compose.yml`, which already migrates.)
 
 ## [1.3.1] — 2026-06-26
 
